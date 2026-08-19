@@ -832,12 +832,25 @@ wss.on('connection', (ws) => {
 
     else if (msg.type === 'nextHand') {
       if (!playerRoom) return;
-      // 放宽状态检查：result 或 ended 之外的状态都可以继续
       if (playerRoom.state === 'ended') return;
-      // 房主点击开始下一局
-      if (playerRoom.players[playerIdx] && playerRoom.players[playerIdx].isHost) {
-        playerRoom.state = 'dealing';
-        startHand(playerRoom);
+      // 所有玩家都可以点准备
+      const p = playerRoom.players[playerIdx];
+      if (p) {
+        p.ready = true;
+        // 通知所有人该玩家已准备
+        broadcast(playerRoom, {type:'log', msg: p.name + ' 已准备'});
+        // 检查所有人类玩家是否都已准备
+        const humanPlayers = playerRoom.players.filter(pl => !pl.isAI);
+        const allReady = humanPlayers.every(pl => pl.ready);
+        if (allReady) {
+          // 重置准备状态
+          playerRoom.players.forEach(pl => pl.ready = false);
+          playerRoom.state = 'dealing';
+          startHand(playerRoom);
+        } else {
+          // 广播当前准备状态
+          broadcast(playerRoom, {type:'readyState', ready: humanPlayers.map(pl => ({name: pl.name, ready: pl.ready}))});
+        }
       }
     }
 
