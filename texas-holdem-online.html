@@ -699,8 +699,15 @@ function showResult(msg) {
     html += '<div id="readyStatus" style="color:#888;font-size:13px;text-align:center;padding:4px 0 8px">等待所有玩家准备...</div>';
     html += '<button class="result-btn" id="nextHandBtn">✅ 准备下一局</button>';
   }
+  // 关闭按钮
+  html += '<button class="result-btn" id="closeResultBtn" style="margin-top:6px;background:#555">✖ 关闭面板</button>';
   html += '</div></div>';
   overlay.innerHTML = html;
+
+  // 关闭按钮：清除面板
+  document.getElementById('closeResultBtn').onclick = () => {
+    overlay.innerHTML = '';
+  };
 
   if (!isLast) {
     document.getElementById('nextHandBtn').onclick = () => {
