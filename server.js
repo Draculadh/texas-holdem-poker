@@ -845,6 +845,8 @@ wss.on('connection', (ws) => {
         if (allReady) {
           // 重置准备状态
           playerRoom.players.forEach(pl => pl.ready = false);
+          // 先通知所有客户端清除结算弹窗
+          broadcast(playerRoom, {type:'clearResult'});
           playerRoom.state = 'dealing';
           startHand(playerRoom);
         } else {
