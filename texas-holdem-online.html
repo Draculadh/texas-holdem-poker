@@ -394,6 +394,12 @@ function handleMessage(msg) {
       showToast('已重新连接');
       break;
     case 'state':
+      // 检测新局开始：轮次变化时清除结果弹窗
+      if (msg.room && G.lastRoundNum !== undefined && msg.room.roundNum !== G.lastRoundNum) {
+        const overlay = document.getElementById('resultOverlay');
+        if (overlay) overlay.innerHTML = '';
+      }
+      if (msg.room) G.lastRoundNum = msg.room.roundNum;
       G.state = msg;
       if (msg.yourIdx !== undefined) G.myIdx = msg.yourIdx;
       if (!document.getElementById('gameScreen').classList.contains('hidden')) {
@@ -480,13 +486,6 @@ function updateRoomPlayers(state) {
 function updateGameState(state) {
   const room = state.room;
   const players = state.players;
-
-  // 新局开始时清除结果弹窗
-  if (state.phase === 'preflop' && state.room && state.room.roundNum !== G.lastRoundNum) {
-    const overlay = document.getElementById('resultOverlay');
-    if (overlay) overlay.innerHTML = '';
-    G.lastRoundNum = state.room.roundNum;
-  }
 
   // 顶栏
   document.getElementById('roomCodeSmall').textContent = state.room ? state.room.code : G.roomCode;
@@ -704,6 +703,8 @@ function showResult(msg) {
       btn.disabled = true;
       btn.textContent = '✅ 已准备';
       btn.style.opacity = '0.6';
+      const statusEl = document.getElementById('readyStatus');
+      if (statusEl) statusEl.textContent = '等待其他玩家准备...';
       send({type:'nextHand'});
     };
   } else {
