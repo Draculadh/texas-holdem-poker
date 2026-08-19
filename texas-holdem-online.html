@@ -396,7 +396,7 @@ function handleMessage(msg) {
     case 'state':
       // 检测新局开始：轮次变化时清除结果弹窗
       if (msg.room && G.lastRoundNum !== undefined && msg.room.roundNum !== G.lastRoundNum) {
-        const overlay = document.getElementById('resultOverlay');
+        const overlay = document.getElementById('overlayArea');
         if (overlay) overlay.innerHTML = '';
       }
       if (msg.room) G.lastRoundNum = msg.room.roundNum;
@@ -426,7 +426,7 @@ function handleMessage(msg) {
       break;
     case 'clearResult':
       // 服务器通知清除结算弹窗
-      var overlay = document.getElementById('resultOverlay');
+      var overlay = document.getElementById('overlayArea');
       if (overlay) overlay.innerHTML = '';
       break;
     case 'readyState':
