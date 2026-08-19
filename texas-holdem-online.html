@@ -424,6 +424,11 @@ function handleMessage(msg) {
     case 'result':
       showResult(msg);
       break;
+    case 'clearResult':
+      // 服务器通知清除结算弹窗
+      var overlay = document.getElementById('resultOverlay');
+      if (overlay) overlay.innerHTML = '';
+      break;
     case 'readyState':
       // 更新准备状态显示
       const statusEl = document.getElementById('readyStatus');
