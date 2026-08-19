@@ -669,12 +669,12 @@ function showResult(msg) {
   const isWinner = msg.winners.includes(G.myName);
   playSound(isWinner ? 'win' : 'lose');
 
-  // 房主显示"准备下一局"按钮
+  // 房主显示"准备下一局"按钮，非房主显示等待提示
+  const isLast = G.state && G.state.room && G.state.room.roundNum >= G.state.room.totalRounds;
   if (G.isHost) {
-    const isLast = G.state && G.state.room && G.state.room.roundNum >= G.state.room.totalRounds;
     html += '<button class="result-btn" id="nextHandBtn">' + (isLast ? '查看最终成绩' : '准备下一局') + '</button>';
   } else {
-    html += '<div style="color:#888;font-size:13px;text-align:center">等待房主开始下一局...</div>';
+    html += '<div style="color:#888;font-size:13px;text-align:center;padding:8px">⏳ 等待房主开始下一局...</div>';
   }
   html += '</div></div>';
   overlay.innerHTML = html;
