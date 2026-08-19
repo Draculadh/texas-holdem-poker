@@ -537,9 +537,11 @@ function awardPot(room, winners, results) {
 }
 
 function startHand(room) {
+  // 如果游戏已经结束，不再开始新局
+  if (room.state === 'ended') return;
   room.roundNum++;
   if (room.roundNum > room.totalRounds) { endMatch(room); return; }
-  if (room.players[0] && room.players[0].chips <= 0) { endMatch(room); return; }
+  // 检查是否有玩家破产（任何玩家筹码归零都结束）
   const alive = room.players.filter(p => p.chips > 0);
   if (alive.length < 2) { endMatch(room); return; }
 
@@ -830,9 +832,11 @@ wss.on('connection', (ws) => {
 
     else if (msg.type === 'nextHand') {
       if (!playerRoom) return;
-      if (playerRoom.state !== 'result') return;
+      // 放宽状态检查：result 或 ended 之外的状态都可以继续
+      if (playerRoom.state === 'ended') return;
       // 房主点击开始下一局
-      if (playerRoom.players[playerIdx].isHost) {
+      if (playerRoom.players[playerIdx] && playerRoom.players[playerIdx].isHost) {
+        playerRoom.state = 'dealing';
         startHand(playerRoom);
       }
     }
